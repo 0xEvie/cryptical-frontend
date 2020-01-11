@@ -1,4 +1,4 @@
-import Api from '../services/api.js'
+import Api from './api.js'
 
 export default {
   login (credentials) {

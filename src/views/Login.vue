@@ -1,8 +1,12 @@
 <template>
-  <b-container>
+  <b-container class="mt-5">
     <h1>Login</h1>
     <br>
-    <b-col md="6" class="mx-auto">
+    <b-col v-if="authenticatedSession" md="6" class="mx-auto">
+      <h2>You're already logged in!</h2>
+    </b-col>
+
+    <b-col v-if="!authenticatedSession" md="6" class="mx-auto">
       <p>Don't have an account? Register <router-link to="/register" id="register-link">here</router-link></p>
       <b-form v-on:submit="login">
         <b-alert dismissible fade variant="danger" @dismissed="removeErrors()" :show="showError"> {{ error }}</b-alert>
@@ -19,18 +23,29 @@
 <script>
 import router from '../router'
 import UserService from '../../services/UserService'
+import AuthService from '../../services/AuthService'
 
 export default {
   name: 'Login',
   data () {
     return {
-      error: 'e',
+      error: '',
+      authenticatedSession: false,
       input: {
         email: '',
         password: ''
       },
       showError: false
     }
+  },
+  mounted: function () {
+    AuthService.authenticated()
+      .then(() => {
+        this.authenticatedSession = true
+      })
+      .catch(() => {
+        this.authenticatedSession = false
+      })
   },
   methods: {
     showErrors () {

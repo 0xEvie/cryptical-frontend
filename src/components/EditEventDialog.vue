@@ -1,7 +1,8 @@
 <template>
-  <b-modal id="editEventModal" title="Edit an Event" @ok="editEvent">
+  <b-modal id="editEventModal" refs="editmodal" v-model="showModalBool" title="Edit an Event" @ok="editEvent">
     <b-form @submit.stop.prevent="submit">
-      <b-form-input id="eventTitle" type="text" placeholder="Event Title" :value="eventdetails.title" v-model="input.title"></b-form-input>
+      <b-alert dismissible fade variant="danger" @dismissed="removeErrors()" :show="showError"> {{ error }}</b-alert>
+      <b-form-input id="eventTitle" type="text" placeholder="Event Title" v-model="input.title" required></b-form-input>
       <br>
       <b-form-row>
         <b-col>
@@ -9,7 +10,7 @@
             id="startDateLabel"
             label="Start Date"
             label-for="startDate">
-            <b-form-input id="startDate" type="date" v-model="input.startDate"></b-form-input>
+            <b-form-input id="startDate" type="date" v-model="input.startDate" required></b-form-input>
           </b-form-group>
         </b-col>
         <b-col>
@@ -17,7 +18,7 @@
             id="startTimeLabel"
             label="Start Time"
             label-for="startTime">
-            <b-form-input id="startTime" type="time" v-model="input.startTime"></b-form-input>
+            <b-form-input id="startTime" type="time" v-model="input.startTime" required></b-form-input>
           </b-form-group>
         </b-col>
       </b-form-row>
@@ -25,10 +26,10 @@
       <b-form-row>
         <b-col>
           <b-form-group
-            id="endDateLabel"
-            label="End Date"
-            label-for="endDate">
-            <b-form-input id="endDate" type="date" v-model="input.endDate"></b-form-input>
+          id="endDateLabel"
+          label="End Date"
+          label-for="endDate">
+          <b-form-input id="startDate" type="date" v-model="input.endDate" required></b-form-input>
           </b-form-group>
         </b-col>
         <b-col>
@@ -36,18 +37,14 @@
             id="endTimeLabel"
             label="End Time"
             label-for="endTime">
-            <b-form-input id="endTime" type="time" v-model="input.endTime"></b-form-input>
+            <b-form-input id="endTime" type="time" v-model="input.endTime" required></b-form-input>
           </b-form-group>
         </b-col>
       </b-form-row>
       <br>
-
-      <b-form-textarea id="notes"
-                       placeholder="Notes"
-                       :rows="3"
-                       :max-rows="6" v-model="input.notes">
-      </b-form-textarea>
     </b-form>
+
+    <b-row class="ml-2 mr-2"><b-button variant="danger" :block=true @click="deleteEvent()">DELETE</b-button></b-row>
   </b-modal>
 </template>
 
@@ -61,75 +58,119 @@ export default {
   data () {
     return {
       error: '',
-      eventdetails: {
-        title: 'notset',
-        startDate: '',
-        startTime: '',
-        endDate: '',
-        endTime: '',
-        notes: ''
-      },
+      showError: false,
+      showModalBool: false,
+      eventid: '',
       input: {
         title: '',
         startDate: '',
         startTime: '',
         endDate: '',
-        endTime: '',
-        notes: ''
+        endTime: ''
       }
     }
   },
-  props: ['event'],
   methods:
   {
-    getEvent: function () {
-      EventService.getEvent(this.event)
+    showErrors () {
+      this.showError = true
+    },
+    removeErrors () {
+      this.showError = false
+    },
+    showModal: function () {
+      this.showModalBool = true
+    },
+    getEvent: function (eventid) {
+      this.eventid = eventid
+      EventService.getEvent(eventid)
         .then((response) => {
-          console.log('event')
-          var startDateTime = new Date(response.data.startdatetime)
-          var endDateTime = new Date(response.data.enddatetime)
+          // console.log(response.data)
+          var title = response.data.title
+          var start = new Date(response.data.start)
+          var end = new Date(response.data.end)
 
-          var startDate = moment(startDateTime).format('yyyy-MM-dd')
-          var startTime = moment(startDateTime).format('HH:MM')
-          var endDate = moment(endDateTime).format('yyyy-MM-dd')
-          var endTime = moment(endDateTime).format('HH:MM')
+          var startDate = moment(start).format('YYYY-MM-DD')
+          var startTime = moment(start).format('HH:MM')
+          var endDate = moment(end).format('YYYY-MM-DD')
+          var endTime = moment(end).format('HH:MM')
 
-          this.eventdetails.startDate = startDate
-          this.eventdetails.startTime = startTime
-          this.eventdetails.endDate = endDate
-          this.eventdetails.endTime = endTime
+          this.input.title = title
+          this.input.startDate = startDate
+          this.input.startTime = startTime
+          this.input.endDate = endDate
+          this.input.endTime = endTime
+
+          // console.group('edit event dialog: edit')
+          // console.log('start: ' + start)
+          // console.log('end: ' + end)
+          // console.groupEnd()
         })
         .catch((errors) => {
-          console.log(errors)
+          // console.log(errors)
           router.push('/login')
         })
     },
     editEvent (e) {
-      //   var title = this.input.title
-      //   var startDate = this.input.startDate
-      //   var startTime = this.input.startTime
-      //   var endDate = this.input.endDate
-      //   var endTime = this.input.endTime
-      //   var notes = this.input.notes
-      //
-      //   var startDateTime = moment(startDate + ' ' + startTime, 'yyy-mm-DD hh:mm').toISOString()
-      //   var endDateTime = moment(endDate + ' ' + endTime, 'yyy-mm-DD hh:mm').toISOString()
-      //
-      //   let event = {
-      //     title: title,
-      //     startdatetime: startDateTime,
-      //     enddatetime: endDateTime,
-      //     notes: notes
-      //   }
-      //   console.log(event)
-      //   EventService.editEvent(this.props.eventID, event)
-      //     .then((response) => {
-      //       console.log(response);
-      //       this.$parent.getEvents()
-      //     })
-      //     .catch((err) => {
-      //       this.error = err
-      //     })
+      var title = this.input.title
+      var startDate = this.input.startDate
+      var startTime = this.input.startTime
+      var endDate = this.input.endDate
+      var endTime = this.input.endTime
+
+      var dateRegEx = new RegExp('/(\\d\\d\\d\\d-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\dZ)/')
+
+      var startisodate = startDate + ' ' + startTime
+      var endisodate = endDate + ' ' + endTime
+
+      // Validation
+      if (dateRegEx.test(startisodate) || dateRegEx.test(endisodate) | title.length < 1 | startDate.length < 1 | endDate.length < 1 | startTime.length < 1 | endTime.length < 1 | endDate.length < 1) {
+        console.log('Error')
+        this.error = 'Please fill in all fields correctly!'
+        this.showError = true
+        e.preventDefault()
+      } else {
+        var start = moment(startisodate, 'yyyy-MM-DD hh:mm').toISOString()
+        var end = moment(endisodate + ' ' + endTime, 'yyyy-MM-DD hh:mm').toISOString()
+
+        let event = {
+          title: title,
+          start: start,
+          end: end
+        }
+        // console.log(event)
+        EventService.editEvent(this.eventid, event)
+          .then((response) => {
+            // console.log(response)
+            this.$parent.getEvents()
+          })
+      }
+    },
+    deleteEvent (e) {
+      var title = this.input.title
+      var startDate = this.input.startDate
+      var startTime = this.input.startTime
+      var endDate = this.input.endDate
+      var endTime = this.input.endTime
+
+      var start = moment(startDate + ' ' + startTime, 'yyyy-MM-DD hh:mm').toISOString()
+      var end = moment(endDate + ' ' + endTime, 'yyyy-MM-DD hh:mm').toISOString()
+
+      let event = {
+        title: title,
+        start: start,
+        end: end
+      }
+      console.log(event)
+      EventService.deleteEvent(this.eventid)
+        .then((response) => {
+          // console.log(response)
+          this.showModalBool = false
+          this.$parent.getEvents()
+        })
+        .catch((err) => {
+          this.error = err
+        })
     }
   }
 }

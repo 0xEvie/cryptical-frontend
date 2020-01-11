@@ -1,7 +1,7 @@
 'use strict'
 const path = require('path')
 const utils = require('./utils')
-const config = require('../config')
+const config = require('../config/index')
 const vueLoaderConfig = require('./vue-loader.conf')
 
 function resolve (dir) {
@@ -74,7 +74,11 @@ module.exports = {
           limit: 10000,
           name: utils.assetsPath('fonts/[name].[hash:7].[ext]')
         }
-      }
+      }//,
+      // {
+      //   test: /\.css$/,
+      //   loader: 'style-loader!css-loader'
+      // }
     ]
   },
   node: {

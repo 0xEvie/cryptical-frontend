@@ -2,8 +2,7 @@
   <div id="app">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
-
-    <app-navbar/>
+    <app-navbar refs="navbar"/>
     <router-view/>
   </div>
 </template>
@@ -27,9 +26,5 @@ export default {
     text-align: center;
     color: #2c3e50;
   //margin-top: 60px;
-  }
-  .navbar
-  {
-    margin-bottom:50px;
   }
 </style>
