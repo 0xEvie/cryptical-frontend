@@ -1,7 +1,7 @@
 # CryptiCal Front-end
 CryptiCal: Encrypted Calendar (Front-end).
 
-This front-end was developed utilizing with NodeJS, ExpressJS, MongoDB.
+This front-end was developed using VueJS
 
 ## Features
 - E2E testing (Cypress)
@@ -41,4 +41,13 @@ npm run cy:open
 ```
 
 ### Screenshots
+
+#### Home Page
+![Home Page](https://i.imgur.com/m03R9B5.png)
+
+#### Events Page
+![Events Page](https://i.imgur.com/2uUbBBr.png)
+
+#### Help Dialog
+![Help Dialog](https://i.imgur.com/tWHWrhA.png)
 
